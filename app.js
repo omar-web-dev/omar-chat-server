@@ -1,42 +1,52 @@
 const express  = require("express"); // express setup
-
-const port = process.env.PORT || 6000
+const { MongoClient, ServerApiVersion} = require('mongodb');
+const cors = require("cors"); 
+const port = process.env.PORT || 5000
 const app = express()     // express call
 
+app.use(cors())
+app.use(express.json())
 
  app.get('/', (req, res)=> {
     res.send('chart app is running')
  })
 
+ 
+ 
+ const uri = `mongodb+srv://omar-chat:f8MYRzfMdKO3O177@cluster0.uadalh8.mongodb.net/?retryWrites=true&w=majority`;
+ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+async function run(){
+    try{
+        const userCollection = client.db('omar-chat').collection('user')
+
+        app.get('/all-services', async (req, res) => {
+            const query = {}
+            const cursor = serviceCollection.find(query)
+            const courses = await cursor.toArray()
+            res.send(courses)
+          })
+
+        app.get('/user', async (req, res) => {
+            const query = { }
+            const cursor = userCollection.find(query)
+            const user = await cursor.toArray()
+            res.send(user)
+          })
+          
+        
+    app.post('/user', async (req, res) => {
+        const user = req.body;
+        console.log(user)
+        const result = await userCollection.insertOne(user)
+        res.send(result)
+      })
+    }
+    finally{}
+}
+
+run()
 
 app.listen(port, () => {
-    console.log('Omar Chart app is running' , port)
+    console.log('Omar Chat app is running' , port)
 })
-
-
-
-// const dotenv  = require("dotenv");  // dot env => hide a sensitive data use this package
-// const mongoose  = require("mongoose");  // mongoose => use mongoose data base
-// const path  = require("path");  // mongoose => use mongoose data base
-
-
-
-// dotenv.config()  // call env config package 
-
-
-
-// // database connection 
-// mongoose.connect(process.env.MONGOOSE_COLLECTION, {
-//     useNewUrlParser : true,
-//     useUnifiedTopology : true
-// })
-// .then(() => console.log('database connection successfully'))
-// .then(error => console.log(error))
-
-// app.use(express.json())
-// app.use(express.urlencoded({encoded : true}))
-
-// app.set("view engin", "ejs")
-// app.use(express.static(part.join(__dirname, 'public')))
-
-// app.use(cookieParser(process.env.COOKIE_SECRET))
